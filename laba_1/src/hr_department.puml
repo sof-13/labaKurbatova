@@ -1,0 +1,34 @@
+@startuml HR_Department Class Diagram
+
+class HR_Department {
+  - String companyName
+  - int employeesCount
+  - double hoursPerMonth
+  - double payPerHour
+  - double incomeTax
+
+  + HR_Department(String companyName, int employeesCount, double hoursPerMonth, double payPerHour, double incomeTax)
+  + String getCompanyName()
+  + int getEmployeesCount()
+  + double getHoursPerMonth()
+  + double getPayPerHour()
+
+  + void setCompanyName(String companyName)
+  + void setEmployeesCount(int employeesCount)
+  + void setHoursPerMonth(double hoursPerMonth)
+  + void setPayPerHour(double payPerHour)
+  + void setIncomeTax(double incomeTax)
+
+  + double calculateTotalIncomeTax()
+  + String toString()
+}
+
+note top of HR_Department
+  **Валидация в сеттерах:**
+  - employeeCount >= 0
+  - 0 <= hoursPerMonth <= 720
+  - payPerHour >= 0
+  - 0 <= incomeTaxRate <= 1
+end note
+
+@enduml
