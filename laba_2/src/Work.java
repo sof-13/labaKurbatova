@@ -1,12 +1,10 @@
-import java.util.Objects;
-
 public class Work {
     private WorkType type;
     private int quantity;
 
     public Work(WorkType type, int quantity) {
         this.type = type;
-        this.quantity = quantity; // валидация в Main
+        this.quantity = quantity;
     }
 
     public WorkType getType() {

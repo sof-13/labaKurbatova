@@ -10,6 +10,7 @@ public class PayrollService {
         employees = new ArrayList<>();
     }
 
+    // возращает то самый объект, всегда один и тот же
     public static synchronized PayrollService getInstance() {
         if (instance == null) {
             instance = new PayrollService();
@@ -25,6 +26,12 @@ public class PayrollService {
         return employees.stream()
                 .filter(e -> e.getFullName().equalsIgnoreCase(fullName.trim()))
                 .findFirst();
+    }
+
+    // проверка, существует ли работник
+    public boolean employeeExists(String fullName) {
+        return employees.stream()
+                .anyMatch(e -> e.getFullName().equalsIgnoreCase(fullName.trim()));
     }
 
     public double getTotalPayroll() {

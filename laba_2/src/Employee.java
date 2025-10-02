@@ -6,7 +6,7 @@ public class Employee {
     private List<Work> works;
 
     public Employee(String fullName) {
-        this.fullName = fullName; // Валидация в Main
+        this.fullName = fullName;
         this.works = new ArrayList<>();
     }
 
@@ -22,6 +22,7 @@ public class Employee {
         return works.stream().mapToDouble(Work::calculatePayment).sum();
     }
 
+    // деструктор
     @Override
     protected void finalize() throws Throwable {
         System.out.println("Employee finalized: " + fullName);

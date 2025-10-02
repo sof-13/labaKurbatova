@@ -1,19 +1,35 @@
 import java.util.Scanner;
 
 public class Main {
-    private static final Scanner scanner = new Scanner(System.in);
-    private static final PayrollService payroll = PayrollService.getInstance();
-
     public static void main(String[] args) {
+        System.out.println("🚀 Запуск программы...\n");
+
+        // как работает SINGLETON
+        System.out.println("1. Первый вызов getInstance()...");
+        PayrollService dept1 = PayrollService.getInstance();
+
+        System.out.println("2. Второй вызов getInstance()...");
+        PayrollService dept2 = PayrollService.getInstance();
+
+        System.out.println("3. Проверяем: один ли это объект?");
+        if (dept1 == dept2) {
+            System.out.println("✅ ДА! Это один и тот же отдел.");
+        } else {
+            System.out.println("❌ НЕТ! Это разные отделы. Ошибка!");
+        }
+
+        System.out.println("\n--- Начинаем работу программы ---\n");
+
+        Scanner scanner = new Scanner(System.in);
         boolean running = true;
         while (running) {
             showMenu();
-            int choice = getIntInput("Выберите пункт меню: ");
+            int choice = getIntInput("Выберите пункт меню: ", scanner);
             switch (choice) {
                 case 1 -> addWorkType();
-                case 2 -> addEmployeeAndWork();
-                case 3 -> getEmployeeSalary();
-                case 4 -> showTotalPayroll();
+                case 2 -> addEmployeeAndWork(scanner, dept1);
+                case 3 -> getEmployeeSalary(scanner, dept1);
+                case 4 -> showTotalPayroll(dept1);
                 case 0 -> {
                     System.out.println("Выход из программы.");
                     running = false;
@@ -24,11 +40,12 @@ public class Main {
         scanner.close();
     }
 
+
     private static void showMenu() {
         System.out.println("\n=== Отдел Расчёта Зарплаты ===");
         System.out.println("1. Показать виды работ");
         System.out.println("2. Добавить работника и его работы");
-        System.out.println("3. Узнать зарплату работника по ФИО");
+        System.out.println("3. Узнать зарплату конкретного работника");
         System.out.println("4. Показать общую сумму выплат");
         System.out.println("0. Выход");
     }
@@ -40,12 +57,17 @@ public class Main {
         }
     }
 
-    private static void addEmployeeAndWork() {
-        System.out.print("Введите ФИО работника: ");
+    private static void addEmployeeAndWork(Scanner scanner, PayrollService payroll) {
+        System.out.print("Введите имя работника: ");
         String fullName = scanner.nextLine().trim();
-        // ВАЛИДАЦИЯ ФИО ВНЕ КЛАССА Employee
+
         if (fullName.isEmpty()) {
-            System.out.println("Ошибка: ФИО не может быть пустым.");
+            System.out.println("Ошибка: имя не может быть пустым.");
+            return;
+        }
+
+        if (payroll.employeeExists(fullName)) {
+            System.out.println("Ошибка: работник с именем '" + fullName + "' уже существует в базе.");
             return;
         }
 
@@ -59,17 +81,14 @@ public class Main {
 
         boolean adding = true;
         while (adding) {
-            int typeIndex = getIntInput("Выберите номер вида работы (или 0 для завершения): ") - 1;
-            if (typeIndex == -1) {
-                break;
-            }
+            int typeIndex = getIntInput("Выберите номер вида работы (или 0 для завершения): ", scanner) - 1;
+            if (typeIndex == -1) break;
             if (typeIndex < 0 || typeIndex >= types.length) {
                 System.out.println("Неверный номер вида работы.");
                 continue;
             }
 
-            int quantity = getIntInput("Введите количество выполненных работ: ");
-            // ВАЛИДАЦИЯ КОЛИЧЕСТВА ВНЕ КЛАССА Work
+            int quantity = getIntInput("Введите количество выполненных работ: ", scanner);
             if (quantity <= 0) {
                 System.out.println("Ошибка: количество работ должно быть положительным.");
                 continue;
@@ -85,14 +104,14 @@ public class Main {
         }
 
         payroll.addEmployee(emp);
-        System.out.println("Работник добавлен.");
+        System.out.println("Работник '" + fullName + "' успешно добавлен.");
     }
 
-    private static void getEmployeeSalary() {
-        System.out.print("Введите ФИО работника: ");
+    private static void getEmployeeSalary(Scanner scanner, PayrollService payroll) {
+        System.out.print("Введите имя работника: ");
         String fullName = scanner.nextLine().trim();
         if (fullName.isEmpty()) {
-            System.out.println("ФИО не может быть пустым.");
+            System.out.println("Имя не может быть пустым.");
             return;
         }
 
@@ -101,16 +120,16 @@ public class Main {
             double salary = employeeOpt.get().calculateSalary();
             System.out.printf("Зарплата работника '%s': %.2f руб.\n", fullName, salary);
         } else {
-            System.out.println("Работник с таким ФИО не найден.");
+            System.out.println("Работник с таким именем не найден.");
         }
     }
 
-    private static void showTotalPayroll() {
+    private static void showTotalPayroll(PayrollService payroll) {
         double total = payroll.getTotalPayroll();
         System.out.printf("Общая сумма выплат всем работникам: %.2f руб.\n", total);
     }
 
-    private static int getIntInput(String prompt) {
+    private static int getIntInput(String prompt, Scanner scanner) {
         while (true) {
             System.out.print(prompt);
             try {
